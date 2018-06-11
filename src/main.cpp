@@ -38,11 +38,12 @@ void loop()
   if (isnan(h) || isnan(t) || isnan(f))
   {
     Serial.println("Failed to read from DHT sensor!");
-    return;
   }
+  else
+  {
+    float hif = dht.computeHeatIndex(f, h);
+    float hic = dht.computeHeatIndex(t, h, false);
 
-  float hif = dht.computeHeatIndex(f, h);
-  float hic = dht.computeHeatIndex(t, h, false);
-
-  printAll(h, t, f, hic, hif);
+    printAll(h, t, f, hic, hif);
+  }
 }
