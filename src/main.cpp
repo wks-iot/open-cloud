@@ -10,18 +10,30 @@ const int DHT_TYPE = DHT11;
 
 const char *T_FEED = "temperature";
 const char *H_FEED = "humidity";
+const char *C_FEED = "control";
 
 DHT dht(DHT_PIN, DHT_TYPE);
 
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 AdafruitIO_Feed *tFeed = io.feed(T_FEED);
 AdafruitIO_Feed *hFeed = io.feed(H_FEED);
+AdafruitIO_Feed *cFeed = io.feed(C_FEED);
+
+void handleControl(AdafruitIO_Data *data)
+{
+
+  Serial.print("Received control: ");
+  Serial.println(data->value());
+ 
+  digitalWrite(LED_PIN, data->toInt());
+}
 
 void setup()
 {
   Serial.begin(9600);
 
   pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
   dht.begin();
 
@@ -34,6 +46,8 @@ void setup()
     Serial.print(".");
     delay(500);
   }
+
+  cFeed->onMessage(handleControl);
 }
 
 void printAll(float h, float t, float f, float hic, float hif)
@@ -46,10 +60,6 @@ void printAll(float h, float t, float f, float hic, float hif)
 void loop()
 {
   io.run();
-
-  digitalWrite(LED_PIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_PIN, LOW);
 
   float h = dht.readHumidity();
   float t = dht.readTemperature();
