@@ -1,12 +1,21 @@
 #include <Arduino.h>
 #include <DHT.h>
+#include <AdafruitIO_WiFi.h>
+#include "config.h"
 
 const int LED_PIN = D1;
 
 const int DHT_PIN = D2;
 const int DHT_TYPE = DHT11;
 
+const char *T_FEED = "temperature";
+const char *H_FEED = "humidity";
+
 DHT dht(DHT_PIN, DHT_TYPE);
+
+AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
+AdafruitIO_Feed *tFeed = io.feed(T_FEED);
+AdafruitIO_Feed *hFeed = io.feed(H_FEED);
 
 void setup()
 {
@@ -15,6 +24,16 @@ void setup()
   pinMode(LED_PIN, OUTPUT);
 
   dht.begin();
+
+  Serial.print("Connecting to Adafruit IO");
+
+  io.connect();
+
+  while (io.status() < AIO_CONNECTED)
+  {
+    Serial.print(".");
+    delay(500);
+  }
 }
 
 void printAll(float h, float t, float f, float hic, float hif)
@@ -26,10 +45,11 @@ void printAll(float h, float t, float f, float hic, float hif)
 
 void loop()
 {
+  io.run();
+
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
   digitalWrite(LED_PIN, LOW);
-  delay(1000);
 
   float h = dht.readHumidity();
   float t = dht.readTemperature();
@@ -45,5 +65,10 @@ void loop()
     float hic = dht.computeHeatIndex(t, h, false);
 
     printAll(h, t, f, hic, hif);
+
+    tFeed->save(t);
+    hFeed->save(h);
   }
+
+  delay(5000);
 }
