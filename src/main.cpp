@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #include <DHT.h>
 #include <AdafruitIO_WiFi.h>
+#include <PubSubClient.h>
 #include "config.h"
 
-const int LED_PIN = D1;
+#define mqtt_server "192.168.43.208"
+
+const int LED_PIN = D1;;
 
 const int DHT_PIN = D2;
 const int DHT_TYPE = DHT11;
@@ -13,6 +16,9 @@ const char *H_FEED = "humidity";
 const char *C_FEED = "control";
 
 DHT dht(DHT_PIN, DHT_TYPE);
+
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
 AdafruitIO_Feed *tFeed = io.feed(T_FEED);
@@ -47,6 +53,8 @@ void setup()
     delay(500);
   }
 
+  client.setServer(mqtt_server, 1883);
+
   cFeed->onMessage(handleControl);
 }
 
@@ -78,6 +86,10 @@ void loop()
 
     tFeed->save(t);
     hFeed->save(h);
+
+    if (client.connect("192.168.43.208")) {
+        client.publish("home/livingroom/temperature", "69");
+    }
   }
 
   delay(5000);
