@@ -9,6 +9,7 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(ANALOG_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop()
