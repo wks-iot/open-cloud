@@ -1,33 +1,24 @@
 #include <Arduino.h>
 
 const int LED_PIN = D1;
-const int PHOTORESISTOR_PIN = D2;
-
-int result;
-int oldresult;
+const int ANALOG_PIN = A0;
+const int LIMIT_VALUE = 750;
+int analogValue = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(PHOTORESISTOR_PIN, INPUT);
+  pinMode(ANALOG_PIN, INPUT);
 }
 
 void loop()
 {
-  oldresult = result;
-  result = digitalRead(D2);
-  if (result != oldresult)
-  {
-    digitalWrite(LED_PIN, result);
-    if (result == 0)
-    {
-      Serial.println("LED OFF");
-    }
-    else
-    {
-      Serial.println("LED ON");
-    }
+  analogValue = analogRead(A0);
+  Serial.println(analogValue);
+  if(analogValue < LIMIT_VALUE){
+    digitalWrite(LED_PIN, 1);
+  } else {
+    digitalWrite(LED_PIN, 0);
   }
-  delay(10);
+  delay(200);
 }
