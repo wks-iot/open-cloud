@@ -1,26 +1,56 @@
 #include <Arduino.h>
 
-int PIN_BUTTON = D1;
-int PIN_LED = D2;
+#include <IRremoteESP8266.h>
+#include <IRrecv.h>
+#include <IRutils.h>
 
-boolean ledState = false;
+int PIN_RELAY = D1;
+int PIN_IR = D2;
+int PIN_BUTTON = D3;
+
+boolean stateLed = false;
+
+IRrecv irrecv(PIN_IR);
+decode_results results;
+
+void changeLedState()
+{
+  stateLed = !stateLed;
+  if (stateLed)
+  {
+    Serial.println("On!");
+  }
+  else
+  {
+    Serial.println("Off!");
+  }
+  digitalWrite(PIN_RELAY, stateLed);
+  Serial.println(stateLed);
+  delay(500);
+}
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(PIN_BUTTON, INPUT_PULLUP);
-  pinMode(PIN_LED, OUTPUT);
+  irrecv.enableIRIn();
+  while (!Serial)
+    delay(50);
+  digitalWrite(PIN_RELAY, stateLed);
 }
 
 void loop()
 {
-  if (!digitalRead(PIN_BUTTON))
+  if (irrecv.decode(&results))
   {
-    Serial.println("CLICK!");
-    ledState = !ledState;
-    digitalWrite(PIN_LED, ledState);
-    Serial.println(ledState);
-    delay(1000);
+    serialPrintUint64(results.value, HEX);
+    if (results.value != 0)
+      changeLedState();
   }
-  delay(10);
+
+  if (digitalRead(PIN_BUTTON))
+  {
+    changeLedState();
+  }
+
+  delay(100);
 }
