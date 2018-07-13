@@ -6,7 +6,7 @@
 
 #define mqtt_server "192.168.43.43"
 
-const int LED_PIN = D1;;
+const int LED_PIN = D1;
 
 const int DHT_PIN = D2;
 const int DHT_TYPE = DHT11;
@@ -30,7 +30,7 @@ void handleControl(AdafruitIO_Data *data)
 
   Serial.print("Received control: ");
   Serial.println(data->value());
- 
+
   digitalWrite(LED_PIN, data->toInt());
 }
 
@@ -87,8 +87,10 @@ void loop()
     tFeed->save(t);
     hFeed->save(h);
 
-    if (client.connect("192.168.43.208")) {
-        client.publish("home/livingroom/temperature", String(t).c_str(), true);
+    if (client.connect("192.168.43.208"))
+    {
+      client.publish("home/livingroom/temperature", String(t).c_str(), true);
+      client.publish("home/livingroom/humidity", String(h).c_str(), true);
     }
   }
 
