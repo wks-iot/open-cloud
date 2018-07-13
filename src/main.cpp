@@ -34,6 +34,7 @@ void setup()
   irrecv.enableIRIn();
   while (!Serial)
     delay(50);
+  pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, stateLed);
 }
 
@@ -44,6 +45,7 @@ void loop()
     serialPrintUint64(results.value, HEX);
     if (results.value != 0){
       changeLedState();
+      irrecv.resume();
     }
   }
 
