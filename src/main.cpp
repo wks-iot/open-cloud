@@ -4,7 +4,7 @@
 #include <PubSubClient.h>
 #include "config.h"
 
-#define mqtt_server "192.168.43.208"
+#define mqtt_server "192.168.43.43"
 
 const int LED_PIN = D1;;
 
