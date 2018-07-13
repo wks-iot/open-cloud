@@ -4,9 +4,8 @@
 #include <IRrecv.h>
 #include <IRutils.h>
 
-int PIN_RELAY = D1;
+int PIN_LED = D1;
 int PIN_IR = D2;
-int PIN_BUTTON = D3;
 
 boolean stateLed = false;
 
@@ -24,7 +23,7 @@ void changeLedState()
   {
     Serial.println("Off!");
   }
-  digitalWrite(PIN_RELAY, stateLed);
+  digitalWrite(PIN_LED, stateLed);
   Serial.println(stateLed);
   delay(500);
 }
@@ -35,7 +34,7 @@ void setup()
   irrecv.enableIRIn();
   while (!Serial)
     delay(50);
-  digitalWrite(PIN_RELAY, stateLed);
+  digitalWrite(PIN_LED, stateLed);
 }
 
 void loop()
@@ -43,13 +42,9 @@ void loop()
   if (irrecv.decode(&results))
   {
     serialPrintUint64(results.value, HEX);
-    if (results.value != 0)
+    if (results.value != 0){
       changeLedState();
-  }
-
-  if (digitalRead(PIN_BUTTON))
-  {
-    changeLedState();
+    }
   }
 
   delay(100);
