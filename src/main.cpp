@@ -88,7 +88,7 @@ void loop()
     hFeed->save(h);
 
     if (client.connect("192.168.43.208")) {
-        client.publish("home/livingroom/temperature", "69");
+        client.publish("home/livingroom/temperature", String(t).c_str(), true);
     }
   }
 
